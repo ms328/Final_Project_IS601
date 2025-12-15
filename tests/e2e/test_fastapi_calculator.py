@@ -1,21 +1,16 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 import pytest
-import requests
+from fastapi.testclient import TestClient
 
+from app.main import app
 from app.models.calculation import Calculation
+
+client = TestClient(app)
 
 # =============================================================================
 # Fixtures & Helpers
 # =============================================================================
-
-@pytest.fixture(scope="session")
-def base_url() -> str:
-    """
-    Base URL for the running FastAPI server.
-    Ensure the app is running before executing tests.
-    """
-    return "http://localhost:8001"
 
 
 def _parse_datetime(dt_str: str) -> datetime:
@@ -25,19 +20,19 @@ def _parse_datetime(dt_str: str) -> datetime:
     return datetime.fromisoformat(dt_str)
 
 
-def register_and_login(base_url: str, user_data: dict) -> dict:
+def register_and_login(user_data: dict) -> dict:
     """
     Registers a new user and logs in.
     Returns the login token payload.
     """
-    reg_resp = requests.post(f"{base_url}/auth/register", json=user_data)
+    reg_resp = client.post("/auth/register", json=user_data)
     assert reg_resp.status_code == 201, f"Registration failed: {reg_resp.text}"
 
     login_payload = {
         "username": user_data["username"],
         "password": user_data["password"]
     }
-    login_resp = requests.post(f"{base_url}/auth/login", json=login_payload)
+    login_resp = client.post("/auth/login", json=login_payload)
     assert login_resp.status_code == 200, f"Login failed: {login_resp.text}"
 
     return login_resp.json()
@@ -47,13 +42,13 @@ def register_and_login(base_url: str, user_data: dict) -> dict:
 # Health & Authentication Tests
 # =============================================================================
 
-def test_health_endpoint(base_url):
-    resp = requests.get(f"{base_url}/health")
+def test_health_endpoint():
+    resp = client.get("/health")
     assert resp.status_code == 200
     assert resp.json() == {"status": "ok"}
 
 
-def test_user_registration_and_login(base_url):
+def test_user_registration_and_login():
     user = {
         "first_name": "Alice",
         "last_name": "Tester",
@@ -63,7 +58,7 @@ def test_user_registration_and_login(base_url):
         "confirm_password": "SecurePass123!"
     }
 
-    token_data = register_and_login(base_url, user)
+    token_data = register_and_login(user)
 
     required_fields = [
         "access_token",
@@ -93,7 +88,7 @@ def test_user_registration_and_login(base_url):
 # Calculation CRUD Integration Tests
 # =============================================================================
 
-def test_create_calculation_addition(base_url):
+def test_create_calculation_addition():
     user = {
         "first_name": "Calc",
         "last_name": "Adder",
@@ -102,7 +97,7 @@ def test_create_calculation_addition(base_url):
         "password": "SecurePass123!",
         "confirm_password": "SecurePass123!"
     }
-    token = register_and_login(base_url, user)["access_token"]
+    token = register_and_login(user)["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
     payload = {
@@ -110,12 +105,12 @@ def test_create_calculation_addition(base_url):
         "inputs": [10, 5, 2]
     }
 
-    resp = requests.post(f"{base_url}/calculations", json=payload, headers=headers)
+    resp = client.post("/calculations", json=payload, headers=headers)
     assert resp.status_code == 201
     assert resp.json()["result"] == 17
 
 
-def test_create_calculation_subtraction(base_url):
+def test_create_calculation_subtraction():
     user = {
         "first_name": "Calc",
         "last_name": "Sub",
@@ -124,7 +119,7 @@ def test_create_calculation_subtraction(base_url):
         "password": "SecurePass123!",
         "confirm_password": "SecurePass123!"
     }
-    token = register_and_login(base_url, user)["access_token"]
+    token = register_and_login(user)["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
     payload = {
@@ -132,12 +127,12 @@ def test_create_calculation_subtraction(base_url):
         "inputs": [10, 3, 2]
     }
 
-    resp = requests.post(f"{base_url}/calculations", json=payload, headers=headers)
+    resp = client.post("/calculations", json=payload, headers=headers)
     assert resp.status_code == 201
     assert resp.json()["result"] == 5
 
 
-def test_create_calculation_multiplication(base_url):
+def test_create_calculation_multiplication():
     user = {
         "first_name": "Calc",
         "last_name": "Mult",
@@ -146,7 +141,7 @@ def test_create_calculation_multiplication(base_url):
         "password": "SecurePass123!",
         "confirm_password": "SecurePass123!"
     }
-    token = register_and_login(base_url, user)["access_token"]
+    token = register_and_login(user)["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
     payload = {
@@ -154,12 +149,12 @@ def test_create_calculation_multiplication(base_url):
         "inputs": [2, 3, 4]
     }
 
-    resp = requests.post(f"{base_url}/calculations", json=payload, headers=headers)
+    resp = client.post("/calculations", json=payload, headers=headers)
     assert resp.status_code == 201
     assert resp.json()["result"] == 24
 
 
-def test_create_calculation_division(base_url):
+def test_create_calculation_division():
     user = {
         "first_name": "Calc",
         "last_name": "Div",
@@ -168,7 +163,7 @@ def test_create_calculation_division(base_url):
         "password": "SecurePass123!",
         "confirm_password": "SecurePass123!"
     }
-    token = register_and_login(base_url, user)["access_token"]
+    token = register_and_login(user)["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
     payload = {
@@ -176,12 +171,12 @@ def test_create_calculation_division(base_url):
         "inputs": [100, 2, 5]
     }
 
-    resp = requests.post(f"{base_url}/calculations", json=payload, headers=headers)
+    resp = client.post("/calculations", json=payload, headers=headers)
     assert resp.status_code == 201
     assert resp.json()["result"] == 10
 
 
-def test_list_get_update_delete_calculation(base_url):
+def test_list_get_update_delete_calculation():
     user = {
         "first_name": "Calc",
         "last_name": "CRUD",
@@ -190,12 +185,12 @@ def test_list_get_update_delete_calculation(base_url):
         "password": "SecurePass123!",
         "confirm_password": "SecurePass123!"
     }
-    token = register_and_login(base_url, user)["access_token"]
+    token = register_and_login(user)["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
     # Create
-    create_resp = requests.post(
-        f"{base_url}/calculations",
+    create_resp = client.post(
+        "/calculations",
         json={"type": "multiplication", "inputs": [3, 4]},
         headers=headers
     )
@@ -203,16 +198,16 @@ def test_list_get_update_delete_calculation(base_url):
     calc_id = create_resp.json()["id"]
 
     # List
-    list_resp = requests.get(f"{base_url}/calculations", headers=headers)
+    list_resp = client.get("/calculations", headers=headers)
     assert any(c["id"] == calc_id for c in list_resp.json())
 
     # Get
-    get_resp = requests.get(f"{base_url}/calculations/{calc_id}", headers=headers)
+    get_resp = client.get(f"/calculations/{calc_id}", headers=headers)
     assert get_resp.status_code == 200
 
     # Update
-    update_resp = requests.put(
-        f"{base_url}/calculations/{calc_id}",
+    update_resp = client.put(
+        f"/calculations/{calc_id}",
         json={"inputs": [5, 6]},
         headers=headers
     )
@@ -220,14 +215,14 @@ def test_list_get_update_delete_calculation(base_url):
     assert update_resp.json()["result"] == 30
 
     # Delete
-    delete_resp = requests.delete(
-        f"{base_url}/calculations/{calc_id}",
+    delete_resp = client.delete(
+        f"/calculations/{calc_id}",
         headers=headers
     )
     assert delete_resp.status_code == 204
 
     # Confirm deletion
-    confirm_resp = requests.get(f"{base_url}/calculations/{calc_id}", headers=headers)
+    confirm_resp = client.get(f"/calculations/{calc_id}", headers=headers)
     assert confirm_resp.status_code == 404
 
 
