@@ -59,17 +59,33 @@ Multiplication
 
 Division
 
-📈 New Advanced Feature: Calculation History & Reports
+📈 **New Advanced Feature: Calculation Reports & Analytics**
 
-The final project feature introduces usage analytics for authenticated users:
+**The final project feature** provides comprehensive usage analytics for authenticated users:
 
-Total number of calculations
+**Backend API (`/reports/usage`)**:
+- **Total calculations**: Count of all calculations performed by user
+- **Breakdown by type**: Number of additions, subtractions, multiplications, divisions
+- **Average result**: Mean value of all calculation results
+- Protected by JWT authentication
+- User-isolated data (each user only sees their own stats)
 
-Breakdown of calculations by type
+**Front-End Integration**:
+- Real-time stats display on dashboard
+- Automatically updates when calculations are created or deleted
+- Clean, professional UI with Tailwind CSS
 
-Timestamp of the most recent calculation
+**Testing Coverage**:
+- **4 Integration tests**: API functionality, database queries, authorization, user isolation
+- **3 E2E tests**: Full workflow, empty state, average calculation accuracy
+- Total: **105 passing tests, 85% code coverage**
 
-This feature is exposed via a dedicated API endpoint and displayed on the dashboard UI.
+This feature demonstrates:
+- ✅ New database queries (aggregation with SQLAlchemy)
+- ✅ RESTful API endpoint design
+- ✅ Pydantic schema validation
+- ✅ Comprehensive test coverage (unit, integration, E2E)
+- ✅ Seamless front-end/back-end integration
 
 🧱 Tech Stack
 Layer	Technology
@@ -146,16 +162,35 @@ API Docs: http://localhost:8000/docs
 Run All Tests
 pytest
 
+With Coverage Report
+pytest --cov=app --cov-report=html --cov-report=term
+
 Run Slow (E2E) Tests
 pytest --run-slow
 
-Test Coverage Includes
+**Test Coverage Summary** (105 tests, 85% coverage):
 
-Unit tests for calculation logic
+**Unit tests** (20 tests): Calculation logic for addition, subtraction, multiplication, division
+
+**Integration tests** (72 tests):
+- Database operations & connections
+- User authentication & registration
+- Calculation CRUD operations
+- **Reports API** (4 tests): usage stats, authorization, user isolation
+- Pydantic schema validation
+
+**E2E tests** (14 tests):
+- Full user registration & login flow
+- Calculation CRUD via API
+- **Reports endpoint** (3 tests): stats accuracy, authentication, average calculation
 
 Integration tests for database & routes
 
 Playwright E2E tests for UI workflows
+
+📊 **Reports Feature Tests**:
+- Integration: 4 tests (empty state, multiple calculations, unauthorized access, user isolation)
+- E2E: 3 tests (full workflow, authentication requirement, average calculation accuracy)
 
 🔁 CI/CD Pipeline
 
