@@ -1,264 +1,200 @@
-# 📦 Project Setup
+📊 FastAPI Calculations Application
 
----
+Final Project – IS601 (Fall 2025)
+Author: Megha Saju
+Docker Hub: https://hub.docker.com/r/msaju20
 
-# 🧩 1. Install Homebrew (Mac Only)
+📌 Project Overview
 
-> Skip this step if you're on Windows.
+This project is a full-stack FastAPI web application that allows authenticated users to perform mathematical calculations, view and manage their calculation history, and analyze their usage through a Calculation History & Reporting feature.
 
-Homebrew is a package manager for macOS.  
-You’ll use it to easily install Git, Python, Docker, etc.
+The application demonstrates professional backend development practices, including:
 
-**Install Homebrew:**
+RESTful API design
 
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
+JWT-based authentication and authorization
 
-**Verify Homebrew:**
+SQLAlchemy ORM with PostgreSQL
 
-```bash
-brew --version
-```
+Pydantic validation
 
-If you see a version number, you're good to go.
+Automated testing (unit, integration, and E2E)
 
----
+Docker containerization
 
-# 🧩 2. Install and Configure Git
+CI/CD with GitHub Actions
 
-## Install Git
+This project fulfills all requirements for the IS601 Final Project – Advanced Feature Integration.
 
-- **MacOS (using Homebrew)**
+🚀 Features
+🔐 Authentication & Security
 
-```bash
-brew install git
-```
+User registration and login
 
-- **Windows**
+Secure password hashing with bcrypt
 
-Download and install [Git for Windows](https://git-scm.com/download/win).  
-Accept the default options during installation.
+JWT access and refresh tokens
 
-**Verify Git:**
+Protected routes using FastAPI dependencies
 
-```bash
-git --version
-```
+🧮 Calculation Management (BREAD)
 
----
+Browse: View all calculations
 
-## Configure Git Globals
+Read: View individual calculations
 
-Set your name and email so Git tracks your commits properly:
+Edit: Update calculation inputs and recompute results
 
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your_email@example.com"
-```
+Add: Create new calculations
 
-Confirm the settings:
+Delete: Remove calculations
 
-```bash
-git config --list
-```
+Supported calculation types:
 
----
+Addition
 
-## Generate SSH Keys and Connect to GitHub
+Subtraction
 
-> Only do this once per machine.
+Multiplication
 
-1. Generate a new SSH key:
+Division
 
-```bash
-ssh-keygen -t ed25519 -C "your_email@example.com"
-```
+📈 New Advanced Feature: Calculation History & Reports
 
-(Press Enter at all prompts.)
+The final project feature introduces usage analytics for authenticated users:
 
-2. Start the SSH agent:
+Total number of calculations
 
-```bash
-eval "$(ssh-agent -s)"
-```
+Breakdown of calculations by type
 
-3. Add the SSH private key to the agent:
+Timestamp of the most recent calculation
 
-```bash
-ssh-add ~/.ssh/id_ed25519
-```
+This feature is exposed via a dedicated API endpoint and displayed on the dashboard UI.
 
-4. Copy your SSH public key:
+🧱 Tech Stack
+Layer	Technology
+Backend	FastAPI, Python
+Database	PostgreSQL
+ORM	SQLAlchemy
+Validation	Pydantic
+Auth	JWT, OAuth2
+Front-End	HTML, Tailwind CSS, JavaScript
+Testing	Pytest, Playwright
+Containerization	Docker, Docker Compose
+CI/CD	GitHub Actions
+🗂 Project Structure
+app/
+├── auth/               # Authentication dependencies
+├── core/               # Configuration & security
+├── database.py         # DB session & engine
+├── models/             # SQLAlchemy models
+├── schemas/            # Pydantic schemas
+├── main.py             # FastAPI app & routes
+templates/              # HTML templates
+static/                 # CSS & JS
+tests/
+├── unit/               # Unit tests
+├── integration/        # Integration tests
+├── e2e/                # Playwright E2E tests
+docker-compose.yml
+Dockerfile
+README.md
 
-- **Mac/Linux:**
+🐳 Running the Application with Docker (Recommended)
+1️⃣ Pull the Image from Docker Hub
+docker pull msaju20/module14_is601
 
-```bash
-cat ~/.ssh/id_ed25519.pub | pbcopy
-```
+2️⃣ Run with Docker Compose
+docker-compose up --build
 
-- **Windows (Git Bash):**
 
-```bash
-cat ~/.ssh/id_ed25519.pub | clip
-```
+Services started:
 
-5. Add the key to your GitHub account:
-   - Go to [GitHub SSH Settings](https://github.com/settings/keys)
-   - Click **New SSH Key**, paste the key, save.
+FastAPI app → http://localhost:8000
 
-6. Test the connection:
+PostgreSQL → port 5432
 
-```bash
-ssh -T git@github.com
-```
+pgAdmin → http://localhost:5050
 
-You should see a success message.
-
----
-
-# 🧩 3. Clone the Repository
-
-Now you can safely clone the course project:
-
-```bash
-git clone <repository-url>
-cd <repository-directory>
-```
-
----
-
-# 🛠️ 4. Install Python 3.10+
-
-## Install Python
-
-- **MacOS (Homebrew)**
-
-```bash
-brew install python
-```
-
-- **Windows**
-
-Download and install [Python for Windows](https://www.python.org/downloads/).  
-✅ Make sure you **check the box** `Add Python to PATH` during setup.
-
-**Verify Python:**
-
-```bash
-python3 --version
-```
-or
-```bash
-python --version
-```
-
----
-
-## Create and Activate a Virtual Environment
-
-(Optional but recommended)
-
-```bash
+💻 Running Locally (Without Docker)
+1️⃣ Create Virtual Environment
 python3 -m venv venv
-source venv/bin/activate   # Mac/Linux
-venv\Scripts\activate.bat  # Windows
-```
+source venv/bin/activate
 
-### Install Required Packages
-
-```bash
+2️⃣ Install Dependencies
 pip install -r requirements.txt
-```
 
----
+3️⃣ Set Environment Variables
 
-# 🐳 5. (Optional) Docker Setup
+Create a .env file:
 
-> Skip if Docker isn't used in this module.
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/fastapi_db
+JWT_SECRET_KEY=your-secret-key
+JWT_REFRESH_SECRET_KEY=your-refresh-secret-key
 
-## Install Docker
+4️⃣ Start the Server
+uvicorn app.main:app --reload
 
-- [Install Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/)
-- [Install Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)
 
-## Build Docker Image
+Visit:
 
-```bash
-docker build -t <image-name> .
-```
+App: http://localhost:8000
 
-## Run Docker Container
+API Docs: http://localhost:8000/docs
 
-```bash
-docker run -it --rm <image-name>
-```
+🧪 Running Tests
+Run All Tests
+pytest
 
----
+Run Slow (E2E) Tests
+pytest --run-slow
 
-# 🚀 6. Running the Project
+Test Coverage Includes
 
-- **Without Docker**:
+Unit tests for calculation logic
 
-```bash
-python main.py
-```
+Integration tests for database & routes
 
-(or update this if the main script is different.)
+Playwright E2E tests for UI workflows
 
-- **With Docker**:
+🔁 CI/CD Pipeline
 
-```bash
-docker run -it --rm <image-name>
-```
+GitHub Actions pipeline automatically:
 
----
+Runs all tests
 
-# 📝 7. Submission Instructions
+Builds Docker image
 
-After finishing your work:
+Pushes image to Docker Hub (msaju20) on success
 
-```bash
-git add .
-git commit -m "Complete Module X"
-git push origin main
-```
+This ensures consistent, production-ready deployments.
 
-Then submit the GitHub repository link as instructed.
+📽 Video Demo
 
----
+A 5–6 minute demo video accompanies this project, demonstrating:
 
-# 🔥 Useful Commands Cheat Sheet
+User authentication
 
-| Action                         | Command                                          |
-| ------------------------------- | ------------------------------------------------ |
-| Install Homebrew (Mac)          | `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"` |
-| Install Git                     | `brew install git` or Git for Windows installer |
-| Configure Git Global Username  | `git config --global user.name "Your Name"`      |
-| Configure Git Global Email     | `git config --global user.email "you@example.com"` |
-| Clone Repository                | `git clone <repo-url>`                          |
-| Create Virtual Environment     | `python3 -m venv venv`                           |
-| Activate Virtual Environment   | `source venv/bin/activate` / `venv\Scripts\activate.bat` |
-| Install Python Packages        | `pip install -r requirements.txt`               |
-| Build Docker Image              | `docker build -t <image-name> .`                |
-| Run Docker Container            | `docker run -it --rm <image-name>`               |
-| Push Code to GitHub             | `git add . && git commit -m "message" && git push` |
+Calculation creation & history
 
----
+Reporting feature
 
-# 📋 Notes
+API routes
 
-- Install **Homebrew** first on Mac.
-- Install and configure **Git** and **SSH** before cloning.
-- Use **Python 3.10+** and **virtual environments** for Python projects.
-- **Docker** is optional depending on the project.
+Tests & Docker setup
 
----
+🧠 Learning Outcomes Addressed
 
-# 📎 Quick Links
+CLO3: Automated testing
 
-- [Homebrew](https://brew.sh/)
-- [Git Downloads](https://git-scm.com/downloads)
-- [Python Downloads](https://www.python.org/downloads/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [GitHub SSH Setup Guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
+CLO4: CI/CD with GitHub Actions
+
+CLO9: Docker containerization
+
+CLO10: REST API development
+
+CLO11: SQL database integration
+
+CLO12: JSON validation with Pydantic
+
+CLO13: Secure authentication practices
