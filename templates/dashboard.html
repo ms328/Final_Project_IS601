@@ -14,9 +14,9 @@
   <span id="successMessage"></span>
 </div>
 
-<!-- ===================== Stats Card (NEW FEATURE) ===================== -->
+<!-- ===================== Stats Card (FINAL PROJECT FEATURE) ===================== -->
 <div class="bg-white shadow rounded-lg p-6 mb-6 border">
-  <h2 class="text-lg font-bold mb-4 text-gray-800">📊 Your Calculation Stats</h2>
+  <h2 class="text-lg font-bold mb-4 text-gray-800">📊 Your Calculation Stats (Reports Feature)</h2>
 
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-gray-700">
     <div>
@@ -28,13 +28,18 @@
       <span id="statAddition">–</span>
     </div>
     <div>
+      <span class="font-semibold">Subtractions:</span>
+      <span id="statSubtraction">–</span>
+    </div>
+    <div>
       <span class="font-semibold">Multiplications:</span>
       <span id="statMultiplication">–</span>
     </div>
-    <div>
-      <span class="font-semibold">Last Calculation:</span>
-      <span id="statLast">–</span>
-    </div>
+  </div>
+  
+  <div class="mt-4 pt-4 border-t">
+    <span class="font-semibold">Average Result:</span>
+    <span id="statAverage" class="text-blue-600">–</span>
   </div>
 </div>
 
@@ -115,9 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000);
   }
 
-  // ===================== Load Stats =====================
+  // ===================== Load Stats (Reports Feature) =====================
   async function loadStats() {
-    const res = await fetch("/calculations/stats", {
+    const res = await fetch("/reports/usage", {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -131,13 +136,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("statAddition").textContent =
       stats.by_type.addition || 0;
 
+    document.getElementById("statSubtraction").textContent =
+      stats.by_type.subtraction || 0;
+
     document.getElementById("statMultiplication").textContent =
       stats.by_type.multiplication || 0;
 
-    document.getElementById("statLast").textContent =
-      stats.last_calculation
-        ? new Date(stats.last_calculation).toLocaleString()
-        : "N/A";
+    document.getElementById("statAverage").textContent =
+      stats.average_result !== null ? stats.average_result : "N/A";
   }
 
   // ===================== Load History =====================
